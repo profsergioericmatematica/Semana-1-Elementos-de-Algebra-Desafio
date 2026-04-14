@@ -32,7 +32,14 @@ O projeto foi construído focando em performance e compatibilidade, sem dependê
 - **[MathJax 3](https://www.mathjax.org/):** Renderização de fórmulas e notações matemáticas (LaTeX) de alta qualidade direto no navegador.
 - **[Font Awesome](https://fontawesome.com/):** Ícones vetoriais para UI/UX.
 
----
 
+👨‍🏫 Autor
+Desenvolvido com 💡 e ☕ por Sérgio Eric.
 
+🎓 Licenciando em Matemática (UNIVESP)
+
+📸 Instagram: @prof.sergio.eric.matematica
+
+📜 Licença
+Este projeto está sob a licença MIT. Sinta-se à vontade para utilizá-lo, modificá-lo e aplicá-lo em suas aulas ou estudos!
    
