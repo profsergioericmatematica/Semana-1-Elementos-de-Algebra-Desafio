@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIVESP - Aritmética Modular (Desafio Respondido)</title>
+    
+    <meta property="og:title" content="UNIVESP - Aritmética Modular">
+    <meta property="og:description" content="Respostas do desafio de Elementos de Álgebra: classes de equivalência, soma e produto módulo 3 e 4.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:url" content="https://exemplo.com/aritmetica-modular">
+
+    <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* ================= VARIÁVEIS E MODO CLARO ================= */
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --primary: #4361ee;
+            --primary-hover: #3f37c9;
+            --secondary: #2b2d42;
+            --danger: #ef233c;
+            --danger-light: #fff0f3;
+            --text-main: #2b2d42;
+            --text-muted: #8d99ae;
+            --border-color: #edf2f4;
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* Cores dos boxes e tabelas */
+            --box-desafio-bg: #eef2ff;
+            --box-respostas-bg: #f0fdf4;
+            --box-quiz-bg: #fffbeb;
+            --table-th-bg: #2b2d42;
+            --table-th-color: #ffffff;
+            --table-td-bg: #edf2f4;
+            --table-td-color: #2b2d42;
+            --passo-bg: #ffffff;
+            --resto-bg: #dbeafe;
+            --resto-text: #1e40af;
+            --classe-bg: #dcfce7;
+            --classe-text: #166534;
+            --code-bg: #f8f9fa;
+        }
+
+        /* ================= MODO ESCURO (DARK MODE) ================= */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #0f172a;
+                --card-bg: #1e293b;
+                --text-main: #f8fafc;
+                --text-muted: #94a3b8;
+                --border-color: #334155;
+                --secondary: #64748b; /* Azul grisalho suave */
+                
+                --box-desafio-bg: #1e1e3f;
+                --box-respostas-bg: #142b1e;
+                --box-quiz-bg: #332205;
+                
+                --table-th-bg: #0f172a;
+                --table-th-color: #e2e8f0;
+                --table-td-bg: #1e293b;
+                --table-td-color: #e2e8f0;
+                
+                --passo-bg: #0f172a;
+                --resto-bg: #1e3a8a;
+                --resto-text: #bfdbfe;
+                --classe-bg: #14532d;
+                --classe-text: #bbf7d0;
+                --code-bg: #0f172a;
+                
+                --danger-light: #4c1d95;
+                --danger: #f87171;
+            }
+            .page-header { background-color: #1e293b; border: 1px solid #334155; }
+            .page-header h2 { border-bottom-color: #334155; }
+            .page-header p { color: #cbd5e1; }
+            .formula-destaque { background: #000000; }
+            .diagonal-highlight { background-color: #422006 !important; }
+            td.editable { background-color: #422006; }
+            td.editable:hover, td.editable:focus { background-color: #713f12; box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3); }
+            .mapa-item { background: #334155; }
+            .tooltip-custom .tooltip-text { background-color: #0f172a; border: 1px solid #334155; }
+            .tooltip-custom .tooltip-text::after { border-color: #0f172a transparent transparent transparent; }
+            input, select { background-color: #0f172a; color: #f8fafc; }
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, h2, h3, h4 { color: var(--secondary); text-align: center; margin-top: 30px; }
+        p { margin-bottom: 15px; width: 100%; }
+
+        .page-header {
+            background-color: var(--table-th-bg); color: var(--table-th-color);
+            width: 100%; padding: 30px; border-radius: var(--radius);
+            margin-bottom: 30px; box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        }
+        .page-header h2 { color: var(--table-th-color); margin-top: 0; margin-bottom: 15px; font-size: 1.6rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.1); padding-bottom: 15px; }
+        .page-header p { margin: 6px 0; font-size: 1.05rem; }
+        .page-header strong { color: #a2d2ff; }
+
+        .desafio-box, .respostas-box, .teoria-box, .quiz-box, .calculadora-box {
+            background-color: var(--card-bg); padding: 25px; margin-bottom: 30px;
+            border-radius: var(--radius); width: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-left: 6px solid;
+        }
+
+        .desafio-box { background-color: var(--box-desafio-bg); border-left-color: #4361ee; }
+        .respostas-box { background-color: var(--box-respostas-bg); border-left-color: #22c55e; }
+        .teoria-box { border-left-color: #2ecc71; }
+        .quiz-box { border-left-color: #f59e0b; background-color: var(--box-quiz-bg); }
+        .calculadora-box { border-left-color: #8b5cf6; }
+
+        .respostas-box h3, .desafio-box h3, .teoria-box h3, .quiz-box h3, .calculadora-box h3 { margin-top: 0; text-align: left; }
+        .respostas-box h3 { color: #15803d; }
+        .desafio-box h3 { color: #4361ee; }
+        .teoria-box h3 { color: #27ae60; }
+        .quiz-box h3 { color: #b45309; }
+        .calculadora-box h3 { color: #6d28d9; }
+
+        .respostas-box h4 { text-align: left; margin-top: 25px; margin-bottom: 10px; color: #166534; border-bottom: 1px solid #bbf7d0; padding-bottom: 5px; }
+        .teoria-box h4 { text-align: left; margin-bottom: 10px; color: var(--secondary); border-bottom: 1px solid var(--border-color); padding-bottom: 5px; }
+
+        .controls {
+            background: var(--card-bg); padding: 20px 30px; border-radius: var(--radius);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05); display: flex; gap: 20px; align-items: flex-end;
+            margin-bottom: 30px; width: 100%; max-width: 600px; justify-content: space-between; flex-wrap: wrap;
+        }
+        .controls div { display: flex; flex-direction: column; flex: 1; min-width: 120px; }
+
+        label { font-weight: 600; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 8px; }
+        input, select { padding: 12px; border: 2px solid var(--border-color); border-radius: 8px; font-size: 1rem; font-family: inherit; transition: var(--transition); outline: none; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15); }
+        
+        button { background-color: var(--primary); color: white; border: none; padding: 12px 20px; font-size: 1rem; font-weight: 600; border-radius: 8px; cursor: pointer; transition: var(--transition); white-space: nowrap; }
+        button:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3); }
+
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 20px 0; padding-bottom: 10px; }
+        
+        table { border-collapse: separate; border-spacing: 12px; margin: 0 auto; background: transparent; box-shadow: none; padding: 0; }
+        th, td { width: 65px; height: 65px; text-align: center; vertical-align: middle; border-radius: 14px; font-size: 1.3rem; font-weight: 700; transition: var(--transition); border: 2px solid transparent; }
+        th { background-color: var(--table-th-bg); color: var(--table-th-color); }
+        td { background-color: var(--table-td-bg); color: var(--table-td-color); cursor: default; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+        td.editable { cursor: pointer; background-color: #fef9c3; color: #1e293b; }
+        td.editable:hover, td.editable:focus-within { background-color: #fde047; outline: none; box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.5); }
+        td:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+
+        /* Input nativo invisível dentro da célula editável */
+        .cell-input { width: 100%; height: 100%; text-align: center; border: none; background: transparent; font-size: 1.3rem; font-weight: bold; font-family: inherit; outline: none; color: inherit; padding: 0; box-shadow: none;}
+
+        .zero-highlight { background-color: var(--danger-light); color: var(--danger); border: 2px solid var(--danger); }
+        .zero-highlight:hover { background-color: var(--danger); color: white; }
+        .diagonal-highlight { background-color: #fef9c3 !important; color: #1e293b !important; }
+
+        #mensagemAlerta { margin-top: 10px; font-size: 1.1rem; text-align: center; max-width: 600px; padding: 15px; border-radius: 8px; }
+
+        .page-footer { margin-top: 60px; padding: 30px 20px; text-align: center; border-top: 2px solid var(--border-color); width: 100%; color: var(--text-muted); font-size: 0.95rem; }
+        .page-footer p { margin: 5px 0; text-align: center; }
+        .page-footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .page-footer a:hover { color: var(--primary-hover); text-decoration: underline; }
+
+        .code-example { background: var(--code-bg); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--secondary); }
+
+        .mapa-conceitual { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 20px 0; }
+        .mapa-item { background: var(--secondary); color: white; padding: 10px 20px; border-radius: 30px; font-weight: bold; font-size: 1.2rem; }
+        .mapa-seta { font-size: 2rem; color: var(--primary); }
+
+        /* Tooltip adaptado para touch/focus */
+        .tooltip-custom { position: relative; display: inline-block; cursor: help; margin-left: 5px; color: var(--text-muted); transition: var(--transition); outline: none; }
+        .tooltip-custom .tooltip-text {
+            visibility: hidden; width: 220px; background-color: var(--secondary); color: #fff; text-align: center; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; font-weight: normal; line-height: 1.4; position: absolute; z-index: 100; bottom: 150%; left: 50%; margin-left: -110px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.2s;
+        }
+        .tooltip-custom .tooltip-text::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: var(--secondary) transparent transparent transparent; }
+        
+        .tooltip-custom:hover .tooltip-text, .tooltip-custom:focus-within .tooltip-text { visibility: visible; opacity: 1; }
+
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+        .flex-row { display: flex; gap: 15px; flex-wrap: wrap; align-items: center; }
+
+        .passo-box { background: var(--passo-bg); border-radius: 16px; padding: 24px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); font-size: 1rem; border: 1px solid var(--border-color); }
+        .formula-destaque { background: #1e293b; color: #facc15; padding: 6px 14px; border-radius: 30px; font-family: 'Courier New', monospace; font-weight: bold; display: inline-block; margin: 8px 0; }
+        .resto-box { background: var(--resto-bg); padding: 4px 12px; border-radius: 24px; font-weight: 700; color: var(--resto-text); border: 1px solid var(--border-color); display: inline-block; margin-top: 5px; }
+        .classe-box { background: var(--classe-bg); padding: 4px 12px; border-radius: 24px; font-weight: 700; color: var(--classe-text); border: 1px solid var(--border-color); display: inline-block; margin-top: 5px;}
+        .linha-divisao { border-bottom: 1px solid var(--border-color); margin: 20px 0; }
+
+        /* Estilo do Modal de Feedback Gamificado */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 999; backdrop-filter: blur(3px); }
+        .modal-content { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); z-index: 1000; text-align: center; width: 90%; max-width: 400px; border: 1px solid var(--border-color); }
+        .modal-content h3 { margin-top: 0; font-size: 2rem; margin-bottom: 10px; }
+        .modal-content p { font-size: 1.1rem; color: var(--text-main); }
+        .modal-btn { margin-top: 20px; width: 100%; padding: 15px; font-size: 1.1rem; }
+
+
+        @media print {
+    body { background-color: #fff; color: #000; padding: 0; }
+    .controls, .quiz-box, button, .tooltip-custom .tooltip-text { display: none !important; }
+    .page-header { box-shadow: none; border: 1px solid #ccc; color: #000; background: #f8f9fa; }
+    .page-header h2, .page-header p { color: #000; }
+    .calculadora-box, .desafio-box, .respostas-box, .teoria-box { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+    .table-responsive { overflow: visible; }
+}
+    </style>
+</head>
+<body>
+
+    <div id="aria-announcer" class="sr-only" aria-live="polite"></div>
+
+    <header class="page-header">
+        <h2>Universidade Virtual do Estado de São Paulo - UNIVESP</h2>
+        <p><strong>Curso:</strong> Licenciatura em Matemática</p>
+        <p><strong>Disciplina:</strong> Elementos de Álgebra</p>
+        <p><strong>Semana 1:</strong> Estruturas algébricas: introdução aos grupos</p>
+        <p><strong>Desafio Semana 1:</strong> Aritmética Modular e as Classes de Equivalência</p>
+    </header>
+
+    <h1>Aritmética Modular e as Classes de Equivalência</h1>
+    
+    <div class="desafio-box">
+        <h3>📌 Desafio Proposto</h3>
+        <p>Um exemplo que encontraremos muitas vezes ao longo do curso é o da <strong>aritmética modular</strong>. Para entender o que é a aritmética modular, começamos fazendo algo um pouco inusitado:</p>
+        <p>Vamos declarar que dois números inteiros são “iguais” quando deixam o mesmo resto na divisão por 2. Um número inteiro \(m\) só pode deixar restos 0 e 1 na divisão por 2; o primeiro caso ocorre quando \(m\) é par e, o segundo, quando \(m\) é ímpar.</p>
+        <p>Então, só temos duas classes de números inteiros se levarmos em conta a “igualdade” introduzida:</p>
+        <ul>
+            <li>A classe dos inteiros pares (que são todos “iguais” entre si),</li>
+            <li>A classe dos inteiros ímpares (que também são todos “iguais” entre si).</li>
+        </ul>
+        <p>Vamos denotar tais classes respectivamente por:</p>
+        <p>\(\bar{0} = \{\dots, -4, -2, 0, 2, 4, \dots\}\) e \(\bar{1} = \{\dots, -3, -1, 1, 3, \dots\}\).</p>
+        <p>Agora, note que há uma aritmética natural envolvendo as classes \(\bar{0}\) e \(\bar{1}\). De fato, temos uma soma:</p>
+        <ul>
+            <li>\(\bar{0} + \bar{0} = \bar{0}\) (a soma de dois números pares é par)</li>
+            <li>\(\bar{0} + \bar{1} = \bar{1} + \bar{0} = \bar{1}\) (a soma de um número par com um número ímpar é ímpar)</li>
+            <li>\(\bar{1} + \bar{1} = \bar{0}\) (a soma de dois números ímpares é um número par)</li>
+        </ul>
+        <p>Analogamente, temos uma multiplicação:</p>
+        <ul>
+            <li>\(\bar{0} \cdot \bar{0} = \bar{0}\)</li>
+            <li>\(\bar{0} \cdot \bar{1} = \bar{1} \cdot \bar{0} = \bar{0}\)</li>
+            <li>\(\bar{1} \cdot \bar{1} = \bar{1}\)</li>
+        </ul>
+        <p>Essa aritmética dos números inteiros módulo 2 ocorre o tempo todo dentro dos computadores! E ainda podemos generalizá-la: que tal declarar que dois números inteiros são “iguais” quando deixam o mesmo resto na divisão por 3? Ou na divisão por 4?</p>
+        <p>Quantas classes teremos em cada um desses casos e como descrever a soma e o produto de classes? Quais diferenças você pode observar entre as aritméticas módulo 3 e módulo 4? Carl Friedrich Gauss desenvolveu a forma moderna da aritmética modular.</p>
+    </div>
+
+    <div class="respostas-box">
+        <h3>✅ Respostas Passo a Passo do Desafio</h3>
+        
+        <h4>🔹 Pergunta 1: Módulo 3 – Classes, Soma e Produto</h4>
+        <p><strong>Quantas classes?</strong> Ao declarar que dois números são "iguais" se têm o mesmo resto na divisão por 3, os restos possíveis são 0, 1 e 2. Portanto, <strong>3 classes</strong>:</p>
+        <ul>
+            <li>\(\bar{0} = \{\dots, -6, -3, 0, 3, 6, 9, \dots\}\)</li>
+            <li>\(\bar{1} = \{\dots, -5, -2, 1, 4, 7, 10, \dots\}\)</li>
+            <li>\(\bar{2} = \{\dots, -4, -1, 2, 5, 8, 11, \dots\}\)</li>
+        </ul>
+        <p><strong>Como descrever a soma?</strong> A soma de duas classes \(\bar{a} + \bar{b}\) é a classe do resto da divisão de \(a+b\) por 3. Exemplos:</p>
+        <ul>
+            <li>\(\bar{1} + \bar{2}\): escolha um representante de cada classe, por exemplo, 1 e 2. Soma comum: \(1+2=3\). Resto de 3 por 3 é 0, logo \(\bar{1} + \bar{2} = \bar{0}\).</li>
+            <li>\(\bar{2} + \bar{2}\): \(2+2=4\), resto 1, então \(\bar{2} + \bar{2} = \bar{1}\).</li>
+        </ul>
+        <p><strong>Como descrever o produto?</strong> Multiplicamos os representantes e reduzimos módulo 3:</p>
+        <ul>
+            <li>\(\bar{2} \cdot \bar{2}\): \(2 \times 2 = 4\), resto 1, logo \(\bar{2} \cdot \bar{2} = \bar{1}\).</li>
+            <li>\(\bar{1} \cdot \bar{2} = \bar{2}\) (pois \(1 \times 2 = 2\), resto 2).</li>
+        </ul>
+        <p>As tábuas completas estão logo abaixo, na seção "Tábuas de Cayley: Módulo 3".</p>
+        <p><strong>Observação importante:</strong> Todo elemento não nulo (\(\bar{1}\) e \(\bar{2}\)) possui inverso multiplicativo: \(\bar{1} \cdot \bar{1} = \bar{1}\) e \(\bar{2} \cdot \bar{2} = \bar{1}\). Isso torna \(\mathbb{Z}_3\) um <strong>corpo</strong> 
+            <span class="tooltip-custom" tabindex="0">
+                <i class="fas fa-info-circle"></i>
+                <span class="tooltip-text">Corpo: Anel comutativo onde todo elemento não-nulo tem inverso multiplicativo</span>
+            </span>.
+        </p>
+
+        <h4>🔹 Pergunta 2: Módulo 4 – Classes, Soma e Produto</h4>
+        <p><strong>Quantas classes?</strong> Os restos possíveis na divisão por 4 são 0, 1, 2 e 3. Portanto, <strong>4 classes</strong>:</p>
+        <ul>
+            <li>\(\bar{0} = \{\dots, -8, -4, 0, 4, 8, \dots\}\)</li>
+            <li>\(\bar{1} = \{\dots, -7, -3, 1, 5, 9, \dots\}\)</li>
+            <li>\(\bar{2} = \{\dots, -6, -2, 2, 6, 10, \dots\}\)</li>
+            <li>\(\bar{3} = \{\dots, -5, -1, 3, 7, 11, \dots\}\)</li>
+        </ul>
+        <p><strong>Soma (módulo 4):</strong> Exemplos:</p>
+        <ul>
+            <li>\(\bar{2} + \bar{3} = \bar{5} \equiv \bar{1}\) (pois 5 dividido por 4 deixa resto 1).</li>
+            <li>\(\bar{3} + \bar{3} = \bar{6} \equiv \bar{2}\).</li>
+        </ul>
+        <p><strong>Produto (módulo 4):</strong> Exemplos:</p>
+        <ul>
+            <li>\(\bar{2} \cdot \bar{3} = \bar{6} \equiv \bar{2}\).</li>
+            <li>\(\bar{2} \cdot \bar{2} = \bar{4} \equiv \bar{0}\). <span style="background-color: #fee2e2; color: #b91c1c; padding: 2px 6px; border-radius: 4px; font-weight: bold;">⚠️ Aqui está a grande diferença!</span> Dois números não nulos multiplicados resultam em zero.</li>
+        </ul>
+        <p>As tábuas completas estão em "Tábuas de Cayley: Módulo 4".</p>
+
+        <h4>🔹 Pergunta 3: Diferenças entre as aritméticas módulo 3 e módulo 4</h4>
+        <p>A principal diferença está na estrutura algébrica que elas formam:</p>
+        <ul>
+            <li><strong>Em \(\mathbb{Z}_3\) (módulo 3):</strong> Não existem divisores de zero. Todo elemento diferente de \(\bar{0}\) tem um inverso multiplicativo. Isso caracteriza um <strong>Corpo</strong> (assim como os números reais).</li>
+            <li><strong>Em \(\mathbb{Z}_4\) (módulo 4):</strong> Existe um divisor de zero: \(\bar{2} \cdot \bar{2} = \bar{0}\). Por causa disso, \(\bar{2}\) não possui inverso multiplicativo (não existe \(x\) tal que \(2x \equiv 1 \pmod{4}\)). Portanto, \(\mathbb{Z}_4\) é apenas um <strong>Anel Comutativo com unidade</strong>, mas <strong>não é um corpo</strong>.</li>
+        </ul>
+        <p><strong>Regra geral (de Gauss):</strong> \(\mathbb{Z}_n\) é um corpo se, e somente se, \(n\) é um número primo. Como 3 é primo, \(\mathbb{Z}_3\) é corpo; como 4 é composto, \(\mathbb{Z}_4\) é apenas anel.</p>
+    </div>
+
+    <div class="quiz-box">
+        <h3><i class="fas fa-question-circle"></i> Teste rápido: você entendeu?</h3>
+        <p>Em \(\mathbb{Z}_4\), qual é o inverso multiplicativo de \(\bar{3}\)?</p>
+        <div class="flex-row">
+            <button onclick="alert('Correto! 3×3=9≡1 mod 4')">\(\bar{3}\)</button>
+            <button onclick="alert('Quase! 2×3=6≡2 mod 4')">\(\bar{2}\)</button>
+            <button onclick="alert('Tente novamente.')">\(\bar{0}\)</button>
+            <button onclick="alert('1×3=3≠1 mod 4')">\(\bar{1}\)</button>
+        </div>
+        <p style="margin-top: 15px;"><i class="fas fa-lightbulb"></i> Dica: um número é seu próprio inverso se seu quadrado ≡ 1.</p>
+    </div>
+
+    <div class="teoria-box">
+        <h3><i class="fas fa-sitemap"></i> Hierarquia das Estruturas Algébricas</h3>
+        <div class="mapa-conceitual">
+            <span class="mapa-item">
+                Grupo 
+                <span class="tooltip-custom" tabindex="0">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip-text">Exemplo: ℤ (inteiros) com a soma.<br>É um grupo abeliano (comutativo).</span>
+                </span>
+            </span>
+            <span class="mapa-seta">→</span>
+            <span class="mapa-item">
+                Anel 
+                <span class="tooltip-custom" tabindex="0">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip-text">Exemplo: ℤ₄ (inteiros módulo 4) com soma e produto.<br>Anel comutativo com unidade, mas possui divisores de zero.</span>
+                </span>
+            </span>
+            <span class="mapa-seta">→</span>
+            <span class="mapa-item">
+                Corpo 
+                <span class="tooltip-custom" tabindex="0">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="tooltip-text">Exemplo: ℤ₃ (módulo 3) e ℝ (reais).<br>Todo elemento ≠0 tem inverso multiplicativo. Sem divisores de zero.</span>
+                </span>
+            </span>
+        </div>
+        <p style="text-align: center; margin-top: 15px;">
+            <i class="fas fa-mouse-pointer"></i> Passe o mouse ou toque nos ícones <i class="fas fa-info-circle"></i> para ver exemplos.
+        </p>
+    </div>
+
+    <div class="teoria-box" style="border-left-color: #0891b2;">
+        <h3 style="color: #0891b2;"><i class="fas fa-lock"></i> Onde isso é usado?</h3>
+        <p>A aritmética modular é a base do algoritmo <strong>RSA (Sistema criptográfico)</strong>, que protege suas mensagens de WhatsApp e transações bancárias. Quando você digita a senha do cartão, o sistema trabalha com potências em <strong>módulos primos enormes</strong>. Entender \(\mathbb{Z}_3\) e \(\mathbb{Z}_4\) é o primeiro passo para compreender como a internet mantém seus dados seguros.</p>
+    </div>
+
+    <div class="teoria-box">
+        <h3>A Notação \(\bar{a}\) e o "Capitão do Time"</h3>
+        <p>Antes de irmos diretamente à resposta do desafio, um breve esclarecimento. O "risquinho" em cima do número (que na matemática chamamos formalmente de barra ou traço) é o detalhe que separa a aritmética comum da álgebra abstrata.</p>
+        <p>Quando escrevemos \(\bar{1}\) (lê-se "classe do um"), não estamos falando do número isolado 1. Estamos falando de um conjunto infinito de números — o que chamamos de Classe de Equivalência (ou classe de congruência).</p>
+        
+        <p>Na aritmética modular, decidimos que números que deixam o mesmo resto são tratados como se fossem a mesma coisa. A barra em cima do número indica que ele é apenas o representante (uma espécie de "capitão do time") de todos os infinitos números que compartilham daquele mesmo resto.</p>
+
+        <div class="code-example">
+            <h4>Para entender a ideia de classe (sem módulo):</h4>
+            <p><em>(Se declararmos que dois números são "iguais" apenas quando são exatamente o mesmo número, cada classe contém um único elemento.)</em></p>
+            <ul>
+                <li>\(\bar{1}\) seria o conjunto \(\{1\}\).</li>
+                <li>\(\bar{2}\) seria o conjunto \(\{2\}\).</li>
+            </ul>
+            <p>Isso não é aritmética modular, mas ajuda a perceber que a barra agrupa números que consideramos equivalentes.</p>
+        </div>
+
+        <div class="code-example">
+            <h4>Por exemplo, no Módulo 1:</h4>
+            <p><em>(Onde todos os números deixam resto 0, ou seja, todos são "iguais" entre si)</em></p>
+            <ul>
+                <li>O \(\bar{0}\) não é apenas o número 0. Ele é o conjunto de TODOS os números inteiros: \(\bar{0} = \{\dots, -2, -1, 0, 1, 2, \dots\}\)</li>
+            </ul>
+        </div>
+
+        <div class="code-example">
+            <h4>Por exemplo, no Módulo 2:</h4>
+            <p><em>(Onde separamos o mundo entre pares e ímpares)</em></p>
+            <ul>
+                <li>O \(\bar{0}\) é o conjunto de todos os números que deixam resto 0 na divisão por 2 (os pares): \(\bar{0} = \{\dots, -4, -2, 0, 2, 4, \dots\}\)</li>
+                <li>O \(\bar{1}\) não é apenas o número 1. Ele é o conjunto de todos os números que deixam resto 1 na divisão por 2 (os ímpares): \(\bar{1} = \{\dots, -3, -1, 1, 3, 5, \dots\}\)</li>
+            </ul>
+        </div>
+
+        <div class="code-example">
+            <h4>Por exemplo, no Módulo 3:</h4>
+            <ul>
+                <li>O \(\bar{0}\) é o conjunto de todos os números que deixam resto 0 na divisão por 3: \(\bar{0} = \{\dots, -6, -3, 0, 3, 6, \dots\}\)</li>
+                <li>O \(\bar{1}\) não é apenas o número 1. Ele é o conjunto de todos os números que deixam resto 1 na divisão por 3: \(\bar{1} = \{\dots, -5, -2, 1, 4, 7, \dots\}\)</li>
+                <li>O \(\bar{2}\) é o conjunto de todos os números que deixam resto 2 na divisão por 3: \(\bar{2} = \{\dots, -4, -1, 2, 5, 8, \dots\}\)</li>
+            </ul>
+        </div>
+
+        <h4>Por que usar a barra?</h4>
+        <p>Nós usamos a barra para não confundir a matemática normal com a modular. Se eu escrevo \(1 + 2 = 0\), isso é matematicamente falso no nosso dia a dia. Mas se eu escrevo \(\bar{1} + \bar{2} = \bar{0}\) (no módulo 3), estou fazendo uma afirmação poderosa sobre conjuntos: "Pegue qualquer número do time do 1 (ex: 7), some com qualquer número do time do 2 (ex: 5), e o resultado (12) com certeza absoluta pertencerá ao time do 0 (os múltiplos de 3)".</p>
+        <p>A barra nos avisa: "Atenção, não estamos operando com números isolados, estamos operando com classes inteiras!".</p>
+    </div>
+
+    <div class="calculadora-box">
+        <h3><i class="fas fa-calculator"></i> Calculadora de Redução Modular – Passo a Passo Matemático</h3>
+        <p>Insira dois números inteiros e o módulo <strong>n</strong>. O sistema mostrará, com rigor matemático, como obter o resto e a classe de equivalência.</p>
+        <div class="flex-row">
+            <input type="number" id="calcA" value="9" style="width: 80px;">
+            <span>+</span>
+            <input type="number" id="calcB" value="5" style="width: 80px;">
+            <span>módulo</span>
+            <input type="number" id="calcMod" value="3" min="2" max="12" style="width: 80px;">
+            <button onclick="atualizarCalculadora()"><i class="fas fa-sync-alt"></i> Calcular</button>
+        </div>
+        <div id="calcResultado" class="passo-box">
+            </div>
+    </div>
+
+    <h2>Tábuas de Cayley: Módulo 3</h2>
+    <div class="table-responsive">
+        <table aria-label="Tábua de adição módulo 3">
+            <tr><th>+</th><th>\(\bar{0}\)</th><th>\(\bar{1}\)</th><th>\(\bar{2}\)</th></tr>
+            <tr><th>\(\bar{0}\)</th><td>\(\bar{0}\)</td><td>\(\bar{1}\)</td><td>\(\bar{2}\)</td></tr>
+            <tr><th>\(\bar{1}\)</th><td>\(\bar{1}\)</td><td>\(\bar{2}\)</td><td>\(\bar{0}\)</td></tr>
+            <tr><th>\(\bar{2}\)</th><td>\(\bar{2}\)</td><td>\(\bar{0}\)</td><td>\(\bar{1}\)</td></tr>
+        </table>
+    </div>
+
+    <div class="table-responsive">
+        <table aria-label="Tábua de multiplicação módulo 3">
+            <tr><th>&times;</th><th>\(\bar{0}\)</th><th>\(\bar{1}\)</th><th>\(\bar{2}\)</th></tr>
+            <tr><th>\(\bar{0}\)</th><td>\(\bar{0}\)</td><td>\(\bar{0}\)</td><td>\(\bar{0}\)</td></tr>
+            <tr><th>\(\bar{1}\)</th><td>\(\bar{0}\)</td><td class="diagonal-highlight">\(\bar{1}\)</td><td>\(\bar{2}\)</td></tr>
+            <tr><th>\(\bar{2}\)</th><td>\(\bar{0}\)</td><td>\(\bar{2}\)</td><td class="diagonal-highlight">\(\bar{1}\)</td></tr>
+        </table>
+    </div>
+    <p class="sr-only">Tábua de multiplicação módulo 3: 0 vezes qualquer coisa é 0; 1 vezes 1 é 1; 1 vezes 2 é 2; 2 vezes 2 é 1.</p>
+
+    <h2>Tábuas de Cayley: Módulo 4</h2>
+    <div class="table-responsive">
+        <table aria-label="Tábua de adição módulo 4">
+            <tr><th>+</th><th>\(\bar{0}\)</th><th>\(\bar{1}\)</th><th>\(\bar{2}\)</th><th>\(\bar{3}\)</th></tr>
+            <tr><th>\(\bar{0}\)</th><td>\(\bar{0}\)</td><td>\(\bar{1}\)</td><td>\(\bar{2}\)</td><td>\(\bar{3}\)</td></tr>
+            <tr><th>\(\bar{1}\)</th><td>\(\bar{1}\)</td><td>\(\bar{2}\)</td><td>\(\bar{3}\)</td><td>\(\bar{0}\)</td></tr>
+            <tr><th>\(\bar{2}\)</th><td>\(\bar{2}\)</td><td>\(\bar{3}\)</td><td>\(\bar{0}\)</td><td>\(\bar{1}\)</td></tr>
+            <tr><th>\(\bar{3}\)</th><td>\(\bar{3}\)</td><td>\(\bar{0}\)</td><td>\(\bar{1}\)</td><td>\(\bar{2}\)</td></tr>
+        </table>
+    </div>
+
+    <div class="table-responsive">
+        <table aria-label="Tábua de multiplicação módulo 4">
+            <tr><th>&times;</th><th>\(\bar{0}\)</th><th>\(\bar{1}\)</th><th>\(\bar{2}\)</th><th>\(\bar{3}\)</th></tr>
+            <tr><th>\(\bar{0}\)</th><td>\(\bar{0}\)</td><td>\(\bar{0}\)</td><td>\(\bar{0}\)</td><td>\(\bar{0}\)</td></tr>
+            <tr><th>\(\bar{1}\)</th><td>\(\bar{0}\)</td><td class="diagonal-highlight">\(\bar{1}\)</td><td>\(\bar{2}\)</td><td>\(\bar{3}\)</td></tr>
+            <tr><th>\(\bar{2}\)</th><td>\(\bar{0}\)</td><td>\(\bar{2}\)</td><td class="zero-highlight diagonal-highlight">\(\bar{0}\)</td><td>\(\bar{2}\)</td></tr>
+            <tr><th>\(\bar{3}\)</th><td>\(\bar{0}\)</td><td>\(\bar{3}\)</td><td>\(\bar{2}\)</td><td class="diagonal-highlight">\(\bar{1}\)</td></tr>
+        </table>
+    </div>
+    <p class="sr-only">Tábua de multiplicação módulo 4: 2 vezes 2 é 0, um divisor de zero.</p>
+
+    <hr style="width: 100%; border: 1px solid var(--border-color); margin: 40px 0;">
+
+    <h2>Explorador Interativo: A Tábua de Cayley</h2>
+    
+    <div class="teoria-box" style="border-left-color: #f39c12;">
+        <h3 style="color: #e67e22;"><i class="fas fa-gamepad"></i> Como usar esta ferramenta?</h3>
+        <p>A <strong>Tábua de Cayley</strong> é uma forma visual de organizar todas as operações possíveis dentro de um conjunto finito. É como se fosse a "tabuada" da nossa aritmética modular.</p>
+        <p><strong>1. Escolha o Módulo (n):</strong> Isso define o tamanho do seu "universo".</p>
+        <p><strong>2. Escolha a Operação:</strong> Alterne entre Adição e Multiplicação.</p>
+        <p><strong>3. Ative o Modo Desafio:</strong> Marque a caixa para testar seus conhecimentos. Toque ou clique nas células vazias para digitar a resposta direto nela!</p>
+        <p><strong>4. O que observar:</strong> Na multiplicação com módulos compostos (como 4 ou 6), você verá zeros acendendo em <span style="color: var(--danger); font-weight: bold;">vermelho</span>! São os <strong>Divisores de Zero</strong>.</p>
+    </div>
+
+    <div class="controls">
+        <div><label for="modulo">Módulo (n):</label><input type="number" id="modulo" min="2" max="12" value="6"></div>
+        <div><label for="operacao">Operação:</label>
+            <select id="operacao">
+                <option value="soma">Adição (+)</option>
+                <option value="mult" selected>Multiplicação (x)</option>
+            </select>
+        </div>
+        <div style="flex-direction: row; align-items: center; gap: 8px;">
+            <input type="checkbox" id="modoDesafio">
+            <label for="modoDesafio" style="margin-bottom: 0;">Modo Desafio</label>
+        </div>
+        <button onclick="gerarTabela()"><i class="fas fa-sync-alt"></i> Gerar Tábua</button>
+        <button onclick="verificarDesafio()" id="btnVerificar" style="display: none;"><i class="fas fa-check-double"></i> Verificar</button>
+    </div>
+
+    <div class="table-responsive" id="resultadoTabela"></div>
+    <p id="mensagemAlerta" style="font-weight: bold;"></p>
+
+    <div id="modalOverlay" class="modal-overlay"></div>
+    <div id="feedbackModal" class="modal-content">
+        <h3 id="modalTitle"></h3>
+        <p id="modalText"></p>
+        <button class="modal-btn" onclick="fecharModal()">Continuar Explorando</button>
+    </div>
+
+    <footer class="page-footer">
+        <p>Desenvolvido por <strong>Sérgio Eric</strong></p>
+        <p>Acompanhe no Instagram: <a href="https://www.instagram.com/prof.sergio.eric.matematica" target="_blank">@prof.sergio.eric.matematica</a></p>
+        <p>&copy; 2026</p>
+    </footer>
+
+    <script>
+        // Função de Acessibilidade
+        function announce(message) {
+            document.getElementById('aria-announcer').textContent = message;
+        }
+
+        // ========== FUNÇÃO DA CALCULADORA DETALHADA ==========
+        function atualizarCalculadora() {
+            const calcModInput = document.getElementById('calcMod');
+            const a = parseInt(document.getElementById('calcA').value) || 0;
+            const b = parseInt(document.getElementById('calcB').value) || 0;
+            const n = parseInt(calcModInput.value) || 3;
+            
+            if (n <= 1) {
+                calcModInput.style.borderColor = "var(--danger)";
+                document.getElementById('calcResultado').innerHTML = `
+                    <div class="passo-box" style="background: var(--danger-light); border-left: 4px solid var(--danger); color: var(--danger);">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        O módulo <strong>n</strong> deve ser um inteiro estritamente maior que 1.
+                    </div>`;
+                return;
+            } else {
+                calcModInput.style.borderColor = "var(--border-color)";
+            }
+
+            const qA = Math.floor(a / n);
+            const rA = ((a % n) + n) % n;
+            const qB = Math.floor(b / n);
+            const rB = ((b % n) + n) % n;
+            const somaR = rA + rB;
+            const qSoma = Math.floor(somaR / n);
+            let rFinal = ((somaR % n) + n) % n;
+            const somaNormal = a + b;
+            const qNormal = Math.floor(somaNormal / n);
+            const rNormal = ((somaNormal % n) + n) % n;
+            
+            let html = `
+                <div style="margin-bottom: 20px;">
+                    <i class="fas fa-book-open" style="color: var(--primary); margin-right: 10px;"></i>
+                    <strong>Definição:</strong> Dado um inteiro \\(x\\) e um módulo \\(n > 0\\), existem únicos inteiros \\(q\\) (quociente) e \\(r\\) (resto) tais que:
+                    <div style="text-align: center; margin: 12px 0;">
+                        <span class="formula-destaque">\\(x = n \\cdot q + r\\)</span> &nbsp; com &nbsp; \\(0 \\le r < n\\).
+                    </div>
+                    A <strong>classe de equivalência</strong> de \\(x\\) módulo \\(n\\) é denotada por \\(\\bar{r}\\) e consiste de todos os inteiros que deixam o mesmo resto \\(r\\) na divisão por \\(n\\).
+                </div>
+                
+                <div class="linha-divisao"></div>
+                
+                <div style="padding: 10px; margin-bottom: 20px;">
+                    <h4 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-arrow-right" style="color: var(--primary);"></i> 
+                        Método 1: Reduzir cada número à sua classe (resto) e depois somar
+                    </h4>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <p style="margin-bottom: 5px;"><strong>🔹 Para \\(a = ${a}\\):</strong></p>
+                        <p style="margin-left: 20px;">
+                            Aplicamos o algoritmo da divisão: procuramos \\(q\\) e \\(r\\) tais que \\(${a} = ${n} \\cdot q + r\\) com \\(0 \\le r < ${n}\\).<br>
+                            Dividindo: \\(${a} \\div ${n} = ${qA}\\) (parte inteira) e resto \\(${rA}\\).<br>
+                            Verificação: \\(${n} \\times (${qA}) + ${rA} = ${n * qA} + ${rA} = ${a}\\).<br>
+                            <em><i class="fas fa-clock" style="color:var(--text-muted);"></i> Analogia do relógio: O ponteiro dá ${Math.abs(qA)} volta(s) completa(s) no relógio de ${n} horas e para no ${rA}.</em><br>
+                            Portanto, <span class="resto-box">resto = ${rA}</span> e a classe é <span class="classe-box">\\(\\bar{${rA}}\\)</span>.
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <p style="margin-bottom: 5px;"><strong>🔹 Para \\(b = ${b}\\):</strong></p>
+                        <p style="margin-left: 20px;">
+                            Algoritmo da divisão: \\(${b} = ${n} \\cdot q + r\\) com \\(0 \\le r < ${n}\\).<br>
+                            \\(${b} \\div ${n} = ${qB}\\) (quociente) e resto \\(${rB}\\).<br>
+                            Verificação: \\(${n} \\times (${qB}) + ${rB} = ${n * qB} + ${rB} = ${b}\\).<br>
+                            <em><i class="fas fa-clock" style="color:var(--text-muted);"></i> Analogia do relógio: O ponteiro dá ${Math.abs(qB)} volta(s) completa(s) no relógio de ${n} horas e para no ${rB}.</em><br>
+                            Assim, <span class="resto-box">resto = ${rB}</span> e a classe é <span class="classe-box">\\(\\bar{${rB}}\\)</span>.
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 10px;">
+                        <p style="margin-bottom: 5px;"><strong>🔸 Somando as classes (restos):</strong></p>
+                        <p style="margin-left: 20px;">
+                            \\(\\bar{${a}} + \\bar{${b}} = \\bar{${rA}} + \\bar{${rB}}\\).<br>
+                            Calculamos a soma dos representantes: \\(${rA} + ${rB} = ${somaR}\\).
+            `;
+            
+            if (somaR >= n) {
+                html += `
+                            <br>Como \\(${somaR} \\ge ${n}\\), precisamos reduzir novamente usando o algoritmo da divisão:<br>
+                            \\(${somaR} = ${n} \\cdot q' + r'\\) com \\(0 \\le r' < ${n}\\).<br>
+                            \\(${somaR} \\div ${n} = ${qSoma}\\) e resto \\(${rFinal}\\).<br>
+                            Verificação: \\(${n} \\times (${qSoma}) + ${rFinal} = ${n * qSoma} + ${rFinal} = ${somaR}\\).<br>
+                            Portanto, <span class="resto-box">resto final = ${rFinal}</span> e a classe resultante é <span class="classe-box">\\(\\bar{${rFinal}}\\)</span>.
+                `;
+            } else {
+                rFinal = somaR;
+                html += `
+                            <br>Como \\(${somaR} < ${n}\\), o resto já está na faixa correta.<br>
+                            Logo, <span class="resto-box">resto final = ${somaR}</span> e a classe é <span class="classe-box">\\(\\bar{${somaR}}\\)</span>.
+                `;
+            }
+            
+            html += `
+                        </p>
+                    </div>
+                    
+                    <p style="margin-top: 15px; font-weight: bold; font-size: 1.1rem; text-align: right;">
+                        \\(\\bar{${a}} + \\bar{${b}} = \\bar{${rFinal}}\\) &nbsp; (módulo ${n})
+                    </p>
+                </div>
+                
+                <div class="linha-divisao"></div>
+
+                <div style="padding: 10px; margin-bottom: 20px;">
+                    <h4 style="margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-check-double" style="color: #10b981;"></i>
+                        Método 2: Somar primeiro e depois reduzir (verificação)
+                    </h4>
+                    <p style="margin-left: 20px;">
+                        Calculamos a soma usual: \\(${a} + ${b} = ${somaNormal}\\).<br>
+                        Aplicamos o algoritmo da divisão a esse resultado:<br>
+                        \\(${somaNormal} = ${n} \\cdot q + r\\) com \\(0 \\le r < ${n}\\).<br>
+                        \\(${somaNormal} \\div ${n} = ${qNormal}\\) (quociente) e resto \\(${rNormal}\\).<br>
+                        Verificação: \\(${n} \\times (${qNormal}) + ${rNormal} = ${n * qNormal} + ${rNormal} = ${somaNormal}\\).<br>
+                        Assim, o resto é <span class="resto-box">${rNormal}</span> e a classe é <span class="classe-box">\\(\\bar{${rNormal}}\\)</span>.
+                    </p>
+                    <p style="margin-left: 20px; margin-top: 10px;">
+                        <i class="fas fa-check-circle" style="color: #22c55e;"></i> 
+                        Os dois métodos conduzem ao mesmo resto <strong>${rNormal}</strong>, confirmando a consistência da aritmética modular.
+                    </p>
+                </div>
+                
+                <div class="linha-divisao"></div>
+                
+                <div style="text-align: center; margin-top: 10px;">
+                    <p style="font-size: 1.3rem; font-weight: 600;">
+                        <i class="fas fa-equals" style="color: var(--primary);"></i> 
+                        \\(${a} + ${b} \\equiv ${rNormal} \\pmod{${n}}\\) &nbsp; \\(\\Rightarrow\\) &nbsp; \\(\\bar{${a}} + \\bar{${b}} = \\bar{${rNormal}}\\)
+                    </p>
+                    <p style="color: var(--text-muted); margin-top: 12px;">
+                        <i class="fas fa-lightbulb"></i> 
+                        Isso significa que, para quaisquer inteiros \\(x \\in \\bar{${a}}\\) e \\(y \\in \\bar{${b}}\\), a soma \\(x + y\\) sempre pertencerá à classe \\(\\bar{${rNormal}}\\).
+                    </p>
+                </div>
+            `;
+            
+            const calcDiv = document.getElementById('calcResultado');
+            calcDiv.innerHTML = html;
+            MathJax.typesetPromise([calcDiv]).then(() => {
+                calcDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        }
+
+        // ========== FUNÇÕES DO EXPLORADOR INTERATIVO ==========
+        let tabelaAtual = null;
+
+        function gerarTabela() {
+            let n = parseInt(document.getElementById('modulo').value);
+            
+            if (n <= 1 || isNaN(n)) {
+                n = 2;
+                document.getElementById('modulo').value = 2;
+            }
+
+            const op = document.getElementById('operacao').value;
+            const modoDesafio = document.getElementById('modoDesafio').checked;
+            const divResultado = document.getElementById('resultadoTabela');
+            const msgAlerta = document.getElementById('mensagemAlerta');
+            const btnVerificar = document.getElementById('btnVerificar');
+            
+            btnVerificar.style.display = modoDesafio ? 'inline-block' : 'none';
+            
+            let html = `<table aria-label="Tábua de Cayley para módulo ${n}"><tr><th>${op === 'soma' ? '+' : '×'}</th>`;
+            for (let i = 0; i < n; i++) html += `<th>\\(\\bar{${i}}\\)</th>`;
+            html += '</tr>';
+
+            let temDivisorZero = false;
+            tabelaAtual = [];
+
+            for (let i = 0; i < n; i++) {
+                html += `<tr><th>\\(\\bar{${i}}\\)</th>`;
+                const linha = [];
+                for (let j = 0; j < n; j++) {
+                    let resultado = (op === 'soma') ? (i + j) % n : (i * j) % n;
+                    linha.push(resultado);
+                    
+                    if (op === 'mult' && resultado === 0 && i !== 0 && j !== 0) temDivisorZero = true;
+                    
+                    let classeExtra = '';
+                    if (op === 'mult' && resultado === 0 && i !== 0 && j !== 0) classeExtra = 'zero-highlight';
+                    if (i === j) classeExtra += ' diagonal-highlight';
+                    
+                    if (modoDesafio) {
+                        html += `<td class="editable" tabindex="0" data-i="${i}" data-j="${j}" onclick="ativarInputCelula(this)" onkeydown="if(event.key === 'Enter') ativarInputCelula(this)">?</td>`;
+                    } else {
+                        html += `<td class="${classeExtra}">\\(\\bar{${resultado}}\\)</td>`;
+                    }
+                }
+                tabelaAtual.push(linha);
+                html += '</tr>';
+            }
+            html += '</table>';
+            divResultado.innerHTML = html;
+
+            if (op === 'mult' && !modoDesafio) {
+                msgAlerta.innerText = temDivisorZero 
+                    ? "Atenção: Este módulo possui divisores de zero destacados em vermelho! Logo, esta estrutura forma apenas um ANEL." 
+                    : "Módulo Primo: Não há divisores de zero. Todo elemento não-nulo possui inverso. Esta estrutura forma um CORPO!";
+                msgAlerta.style.color = temDivisorZero ? "var(--danger)" : "#2ecc71";
+            } else {
+                msgAlerta.innerText = modoDesafio ? "Modo Desafio ativado! Clique ou use a tecla TAB + Enter nas células '?' para responder." : "";
+                msgAlerta.style.color = "inherit";
+            }
+
+            MathJax.typesetPromise([divResultado]).then(() => {
+                divResultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+        }
+
+        function ativarInputCelula(celula) {
+            if (celula.querySelector('input')) return; // Já está editando
+            
+            const i = parseInt(celula.dataset.i);
+            const j = parseInt(celula.dataset.j);
+            
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'cell-input';
+            
+            celula.innerHTML = '';
+            celula.appendChild(input);
+            input.focus();
+            
+            const salvarValor = () => {
+                const valor = input.value;
+                if (valor !== null && valor.trim() !== '' && !isNaN(valor)) {
+                    const num = parseInt(valor);
+                    celula.innerHTML = `\\(\\bar{${num}}\\)`;
+                    celula.classList.remove('editable');
+                    celula.removeAttribute('onclick');
+                    celula.removeAttribute('onkeydown');
+                    celula.removeAttribute('tabindex'); 
+                    MathJax.typesetPromise([celula]);
+                    announce(`Célula linha ${i+1}, coluna ${j+1} preenchida com valor ${num}`);
+                } else {
+                    celula.innerHTML = '?'; // Reverte se estiver vazio
+                }
+            };
+
+            input.addEventListener('blur', salvarValor);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    input.blur(); // Perder o foco aciona o save automaticamente
+                }
+            });
+        }
+
+        function verificarDesafio() {
+            const n = parseInt(document.getElementById('modulo').value);
+            const op = document.getElementById('operacao').value;
+            const celulas = document.querySelectorAll('#resultadoTabela td');
+            let acertos = 0, total = 0;
+            
+            celulas.forEach(td => {
+                if (td.hasAttribute('data-i')) {
+                    const i = parseInt(td.dataset.i);
+                    const j = parseInt(td.dataset.j);
+                    const esperado = (op === 'soma') ? (i + j) % n : (i * j) % n;
+                    const texto = td.innerText.trim();
+                    const match = texto.match(/\\bar\{([\-\d]+)\}/); // Captura até números negativos
+                    
+                    if (match) {
+                        total++;
+                        const valorDigitado = parseInt(match[1]);
+                        // O RIGOR ALGÉBRICO: Aceita respostas congruentes (ex: mod 3, digitar 5 vale por 2)
+                        const valorCorrigido = ((valorDigitado % n) + n) % n;
+                        
+                        if (valorCorrigido === esperado) {
+                            acertos++;
+                            td.style.backgroundColor = "inherit"; // Limpa erros passados
+                        } else {
+                            td.style.backgroundColor = "var(--danger-light)";
+                            td.style.color = "var(--danger)";
+                            td.style.border = "2px solid var(--danger)";
+                        }
+                    }
+                }
+            });
+            
+            // Gamificação: Modal de Feedback
+            const modalTitle = document.getElementById('modalTitle');
+            const modalText = document.getElementById('modalText');
+            
+            if(total === 0) {
+                modalTitle.innerText = "Ops!";
+                modalTitle.style.color = "var(--text-main)";
+                modalText.innerHTML = "Você não preencheu nenhuma célula. Tente responder algumas antes de verificar.";
+            } else if (acertos === total) {
+                modalTitle.innerText = "🎉 Perfeito! 🎉";
+                modalTitle.style.color = "#10b981";
+                modalText.innerHTML = `Você acertou <strong>todas as ${total}</strong> células que preencheu!<br><br>Seu entendimento de aritmética modular está afiado.`;
+                announce("Desafio verificado. Você acertou todas as células preenchidas!");
+            } else {
+                modalTitle.innerText = "Desafio Concluído";
+                modalTitle.style.color = "var(--primary)";
+                modalText.innerHTML = `Você acertou <strong>${acertos}</strong> de <strong>${total}</strong> células preenchidas.<br><br>Revisamos as células e destacamos os erros em vermelho na tabela. Tente novamente!`;
+                announce(`Desafio verificado. Você acertou ${acertos} de ${total} células.`);
+            }
+            
+            document.getElementById('modalOverlay').style.display = 'block';
+            document.getElementById('feedbackModal').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('feedbackModal').style.display = 'none';
+        }
+
+        // Inicialização
+        window.onload = function() {
+            gerarTabela();
+            atualizarCalculadora();
+        };
+    </script>
+</body>
+</html>
