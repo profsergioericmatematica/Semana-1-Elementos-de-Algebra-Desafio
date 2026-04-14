@@ -34,13 +34,5 @@ O projeto foi construído focando em performance e compatibilidade, sem dependê
 
 ---
 
-## 🚀 Como Executar o Projeto
-
-Como o projeto é construído estritamente com tecnologias web nativas (Frontend), não é necessária nenhuma instalação complexa de dependências, Node.js ou servidores locais.
-
-1. **Clone o repositório:**
-   ```bash
-   git clone [profsergioericmatematica/Semana-1-Elementos-de-Algebra-Desafio.git]([https://github.com/SEU_USUARIO/aritmetica-modular-univesp.](https://github.com/profsergioericmatematica/Semana-1-Elementos-de-Algebra-Desafio)git)
-
 
    
