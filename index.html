@@ -660,9 +660,7 @@
             
             const calcDiv = document.getElementById('calcResultado');
             calcDiv.innerHTML = html;
-            MathJax.typesetPromise([calcDiv]).then(() => {
-                calcDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            });
+           MathJax.typesetPromise([calcDiv]);
         }
 
         // ========== FUNÇÕES DO EXPLORADOR INTERATIVO ==========
@@ -727,7 +725,6 @@
             }
 
             MathJax.typesetPromise([divResultado]).then(() => {
-                divResultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             });
         }
 
@@ -834,6 +831,7 @@
         window.onload = function() {
             gerarTabela();
             atualizarCalculadora();
+            window.scrollTo(0, 0);
         };
     </script>
 </body>
